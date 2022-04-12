@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"goblog/pkg/route"
 	"log"
 	"net/http"
 	"net/url"
@@ -17,7 +18,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var router = mux.NewRouter()
+var router *mux.Router
 
 var db *sql.DB
 
@@ -66,19 +67,6 @@ func (a Article) Delete() (rowsAffected int64, err error) {
 	return 0, nil
 }
 
-//通过路由名称 获取URL
-func RouteName2URL(routeName string, pairs ...string) string {
-
-	url, err := router.Get(routeName).URL(pairs...)
-
-	if err != nil {
-		checkError(err)
-		return ""
-	}
-
-	return url.String()
-}
-
 func Int64ToString(num int64) string {
 	return strconv.FormatInt(num, 10)
 }
@@ -101,7 +89,7 @@ func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprint(w, "读取成功，文章标题————"+article.Title)
 		tmpl, err := template.New("show.gohtml").Funcs(template.FuncMap{
-			"RouteName2URL": RouteName2URL,
+			"RouteName2URL": route.Name2URL,
 			"Int64ToString": Int64ToString,
 		}).ParseFiles("resources/views/articles/show.gohtml")
 		checkError(err)
@@ -484,6 +472,9 @@ func main() {
 
 	initDB()
 	createTables()
+
+	route.Initialize()
+	router = route.Router
 
 	//router := http.NewServeMux()
 	//router := mux.NewRouter()

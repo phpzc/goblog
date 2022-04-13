@@ -22,22 +22,6 @@ var router *mux.Router
 
 var db *sql.DB
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Fprint(w, "<h1>Hello, 欢迎来到 goblog！</h1>")
-
-}
-
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "此博客是用以记录编程笔记，如您有反馈或建议，请联系 "+
-		"<a href=\"mailto:summer@example.com\">summer@example.com</a>")
-}
-
-func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprint(w, "<h1>请求页面未找到 :(</h1><p>如有疑惑，请联系我们。</p>")
-}
-
 type Article struct {
 	Title, Body string
 	ID          int64
@@ -425,9 +409,6 @@ func main() {
 	//router := http.NewServeMux()
 	//router := mux.NewRouter()
 
-	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
-	router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
-
 	// 文章详情
 	router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
 
@@ -440,8 +421,6 @@ func main() {
 	router.HandleFunc("/articles/{id:[0-9]+}", articlesUpdateHandler).Methods("POST").Name("articles.update")
 
 	router.HandleFunc("/articles/{id:[0-9]+}/delete", articlesDeleteHandler).Methods("POST").Name("articles.delete")
-
-	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
 	//中间件 强制内容为HTML
 	router.Use(forceHTMLMiddleware)

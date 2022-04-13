@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"fmt"
+	"goblog/app/models/article"
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
 	"goblog/pkg/types"
@@ -13,11 +14,11 @@ import (
 type ArticlesController struct {
 }
 
-func Show(w http.ResponseWriter, r *http.Request) {
+func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 
 	id := route.GetRouteVariable("id", r)
 
-	article, err := getArticleByID(id)
+	article, err := article.Get(id)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -31,8 +32,8 @@ func Show(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprint(w, "读取成功，文章标题————"+article.Title)
 		tmpl, err := template.New("show.gohtml").Funcs(template.FuncMap{
-			"RouteName2URL": route.Name2URL,
-			"Int64ToString": types.Int64ToString,
+			"RouteName2URL":  route.Name2URL,
+			"Uint64ToString": types.Uint64ToString,
 		}).ParseFiles("resources/views/articles/show.gohtml")
 		logger.LogError(err)
 

@@ -130,15 +130,24 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "500 服务器内部错误")
 		}
 	} else {
-		fmt.Fprint(w, "读取成功，文章标题————"+article.Title)
-		tmpl, err := template.New("show.gohtml").Funcs(template.FuncMap{
-			"RouteName2URL":  route.Name2URL,
-			"Uint64ToString": types.Uint64ToString,
-		}).ParseFiles("resources/views/articles/show.gohtml")
+
+		viewDir := "resources/views"
+
+		files, err := filepath.Glob(viewDir + "/layouts/*.gohtml")
 		logger.LogError(err)
 
-		err = tmpl.Execute(w, article)
+		newFiles := append(files, viewDir+"/articles/show.gohtml")
+
+		tmpl, err := template.New("show.gohtml").
+			Funcs(template.FuncMap{
+				"RouteName2URL":  route.Name2URL,
+				"Uint64ToString": types.Uint64ToString,
+			}).ParseFiles(newFiles...)
 		logger.LogError(err)
+
+		err = tmpl.ExecuteTemplate(w, "app", article)
+		logger.LogError(err)
+
 	}
 
 }
@@ -153,12 +162,6 @@ func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "500 服务器内部错误")
 	} else {
-		//原单文件模板
-		// tmpl, err := template.ParseFiles("resources/views/articles/index.gohtml")
-		// logger.LogError(err)
-
-		// err = tmpl.Execute(w, articles)
-		// logger.LogError(err)
 
 		//加载模板
 		viewDir := "resources/views"

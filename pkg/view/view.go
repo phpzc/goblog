@@ -9,26 +9,28 @@ import (
 	"strings"
 )
 
-func Render(w io.Writer, name string, data interface{}) {
+func Render(w io.Writer, data interface{}, tplFiles ...string) {
 
 	//加载模板
 	viewDir := "resources/views/"
 
-	//语法糖 将 articles.show 更正为 articles/show
-	name = strings.Replace(name, ".", "/", -1)
+	for i, f := range tplFiles {
+		//语法糖 将 articles.show 更正为 articles/show
+		tplFiles[i] = viewDir + strings.Replace(f, ".", "/", -1) + ".gohtml"
+	}
 
 	//所有布局模板文件 slice
 	files, err := filepath.Glob(viewDir + "layouts/*.gohtml")
 	logger.LogError(err)
 
 	//在slice里新增我们的目标
-	newFiles := append(files, viewDir+name+".gohtml")
+	allFiles := append(files, tplFiles...)
 
 	//解析模板文件
-	tmpl, err := template.New(name + ".gohtml").
+	tmpl, err := template.New("").
 		Funcs(template.FuncMap{
 			"RouteName2URL": route.Name2URL,
-		}).ParseFiles(newFiles...)
+		}).ParseFiles(allFiles...)
 	logger.LogError(err)
 
 	//渲染模板 将所有文章数据传输进去

@@ -28,7 +28,7 @@ type ArticlesFormData struct {
 //create 文章创建页面
 func (*ArticlesController) Create(w http.ResponseWriter, r *http.Request) {
 
-	view.Render(w, ArticlesFormData{}, "articles.create", "articles._form_field")
+	view.Render(w, view.D{}, "articles.create", "articles._form_field")
 
 }
 
@@ -77,10 +77,10 @@ func (*ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		view.Render(w, ArticlesFormData{
-			Title:  title,
-			Body:   body,
-			Errors: errors,
+		view.Render(w, view.D{
+			"Title":  title,
+			"Body":   body,
+			"Errors": errors,
 		}, "articles.create", "articles._form_field")
 
 	}
@@ -181,11 +181,11 @@ func (*ArticlesController) Update(w http.ResponseWriter, r *http.Request) {
 
 			// 4.3 表单验证不通过，显示理由
 
-			view.Render(w, ArticlesFormData{
-				Title:   title,
-				Body:    body,
-				Article: _article,
-				Errors:  errors,
+			view.Render(w, view.D{
+				"Title":   title,
+				"Body":    body,
+				"Article": _article,
+				"Errors":  errors,
 			}, "articles.edit", "articles._form_field")
 		}
 	}
@@ -211,11 +211,11 @@ func (*ArticlesController) Edit(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 
-		view.Render(w, ArticlesFormData{
-			Title:   _article.Title,
-			Body:    _article.Body,
-			Article: _article,
-			Errors:  nil,
+		view.Render(w, view.D{
+			"Title":   _article.Title,
+			"Body":    _article.Body,
+			"Article": _article,
+			"Errors":  make(map[string]interface{}),
 		}, "articles.edit", "articles._form_field")
 
 	}

@@ -9,7 +9,19 @@ import (
 	"strings"
 )
 
+//定义通用 传参给视图的数据
+type D map[string]interface{}
+
 func Render(w io.Writer, data interface{}, tplFiles ...string) {
+
+	RenderTemplate(w, "app", data, tplFiles...)
+}
+
+func RenderSimple(w io.Writer, data interface{}, tplFiles ...string) {
+	RenderTemplate(w, "simple", data, tplFiles...)
+}
+
+func RenderTemplate(w io.Writer, name string, data interface{}, tplFiles ...string) {
 
 	//加载模板
 	viewDir := "resources/views/"
@@ -23,7 +35,7 @@ func Render(w io.Writer, data interface{}, tplFiles ...string) {
 	files, err := filepath.Glob(viewDir + "layouts/*.gohtml")
 	logger.LogError(err)
 
-	//在slice里新增我们的目标
+	//合并所有文件
 	allFiles := append(files, tplFiles...)
 
 	//解析模板文件
@@ -34,6 +46,6 @@ func Render(w io.Writer, data interface{}, tplFiles ...string) {
 	logger.LogError(err)
 
 	//渲染模板 将所有文章数据传输进去
-	err = tmpl.ExecuteTemplate(w, "app", data)
+	err = tmpl.ExecuteTemplate(w, name, data)
 	logger.LogError(err)
 }

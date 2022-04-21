@@ -12,7 +12,7 @@ import (
 func init() {
 
 	//自定义验证规则
-	govalidator.AddCustomRule("not_exists", func(field, rule, message string, value interface{}) error {
+	govalidator.AddCustomRule("not_exists", func(field string, rule string, message string, value interface{}) error {
 		rng := strings.Split(strings.TrimPrefix(rule, "not_exists:"), ",")
 
 		tableName := rng[0]

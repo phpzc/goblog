@@ -43,6 +43,8 @@ func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 		_user.Create()
 
 		if _user.ID > 0 {
+			//登录用户
+			auth.Login(_user)
 			http.Redirect(w, r, "/", http.StatusFound)
 
 		} else {
@@ -56,6 +58,7 @@ func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 func (*AuthController) Login(w http.ResponseWriter, r *http.Request) {
 
 	view.RenderSimple(w, view.D{}, "auth.login")
+
 }
 
 //处理登录表单提交

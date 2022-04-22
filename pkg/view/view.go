@@ -1,6 +1,7 @@
 package view
 
 import (
+	"goblog/pkg/auth"
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
 	"html/template"
@@ -12,31 +13,22 @@ import (
 //定义通用 传参给视图的数据
 type D map[string]interface{}
 
-func Render(w io.Writer, data interface{}, tplFiles ...string) {
+func Render(w io.Writer, data D, tplFiles ...string) {
 
 	RenderTemplate(w, "app", data, tplFiles...)
 }
 
-func RenderSimple(w io.Writer, data interface{}, tplFiles ...string) {
+func RenderSimple(w io.Writer, data D, tplFiles ...string) {
 	RenderTemplate(w, "simple", data, tplFiles...)
 }
 
-func RenderTemplate(w io.Writer, name string, data interface{}, tplFiles ...string) {
+func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 
-	//加载模板
-	viewDir := "resources/views/"
+	//通用模板数据
+	data["isLogined"] = auth.Check()
 
-	for i, f := range tplFiles {
-		//语法糖 将 articles.show 更正为 articles/show
-		tplFiles[i] = viewDir + strings.Replace(f, ".", "/", -1) + ".gohtml"
-	}
-
-	//所有布局模板文件 slice
-	files, err := filepath.Glob(viewDir + "layouts/*.gohtml")
-	logger.LogError(err)
-
-	//合并所有文件
-	allFiles := append(files, tplFiles...)
+	//生成模板文件
+	allFiles := getTemplateFiles(tplFiles...)
 
 	//解析模板文件
 	tmpl, err := template.New("").
@@ -48,4 +40,22 @@ func RenderTemplate(w io.Writer, name string, data interface{}, tplFiles ...stri
 	//渲染模板 将所有文章数据传输进去
 	err = tmpl.ExecuteTemplate(w, name, data)
 	logger.LogError(err)
+}
+
+func getTemplateFiles(tplFiles ...string) []string {
+	//加载模板
+	viewDir := "resources/views/"
+
+	//遍历传参文件列表 Slice，设置正确的路径，支持 dir.filename 语法糖
+	for i, f := range tplFiles {
+
+		tplFiles[i] = viewDir + strings.Replace(f, ".", "/", -1) + ".gohtml"
+	}
+
+	//所有布局模板文件 slice
+	layoutFiles, err := filepath.Glob(viewDir + "layouts/*.gohtml")
+	logger.LogError(err)
+
+	//合并所有文件
+	return append(layoutFiles, tplFiles...)
 }

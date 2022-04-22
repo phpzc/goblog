@@ -104,7 +104,7 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 
-		view.Render(w, article, "articles.show")
+		view.Render(w, view.D{"Article": article}, "articles.show")
 
 	}
 
@@ -121,7 +121,9 @@ func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "500 服务器内部错误")
 	} else {
 
-		view.Render(w, articles, "articles.index")
+		view.Render(w, view.D{
+			"Articles": articles,
+		}, "articles.index")
 
 	}
 

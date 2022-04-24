@@ -45,6 +45,7 @@ func Attempt(email string, password string) error {
 
 	}
 	if !_user.ComparePassword(password) {
+
 		return errors.New("账号不存在或密码错误")
 	}
 

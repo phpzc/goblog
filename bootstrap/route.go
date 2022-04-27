@@ -1,20 +1,28 @@
 package bootstrap
 
 import (
+	"embed"
 	"goblog/pkg/route"
 	"goblog/routes"
+	"io/fs"
+	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
 //路由初始化
-func SetupRoute() *mux.Router {
+func SetupRoute(staticFS embed.FS) *mux.Router {
 
 	router := mux.NewRouter()
 
 	routes.RegisterWebRoutes(router)
 
 	route.SetRoute(router)
+
+	//静态资源
+	//去除public前缀
+	sub, _ := fs.Sub(staticFS, "public")
+	router.PathPrefix("/").Handler(http.FileServer(http.FS(sub)))
 
 	return router
 }

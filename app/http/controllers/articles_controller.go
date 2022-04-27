@@ -92,14 +92,15 @@ func (ac *ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 func (ac *ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 
 	//获取多条数据
-	articles, err := article.GetAll()
+	articles, pagerData, err := article.GetAll(r, 2)
 
 	if err != nil {
 		ac.ResponseForSQLError(w, err)
 	} else {
 
 		view.Render(w, view.D{
-			"Articles": articles,
+			"Articles":  articles,
+			"PagerData": pagerData,
 		}, "articles.index", "articles._article_meta")
 
 	}

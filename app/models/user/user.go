@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"goblog/app/models"
 	"goblog/pkg/password"
+	"goblog/pkg/route"
 )
 
 type User struct {
@@ -24,6 +25,6 @@ func (user *User) ComparePassword(_password string) bool {
 }
 
 //Link方法生成用户链接
-func (user *User) Link() string {
-	return ""
+func (user User) Link() string {
+	return route.Name2URL("users.show", "id", user.GetStringID())
 }

@@ -43,6 +43,10 @@ func RegisterWebRoutes(r *mux.Router) {
 	//中间件 强制内容为HTML
 	//r.Use(middlewares.ForceHTML)
 
+	//用户相关
+	uc := new(controllers.UserController)
+	r.HandleFunc("/users/{id:[0-9]+}", uc.Show).Methods("GET").Name("users.show")
+
 	//静态文件
 	r.PathPrefix("/css/").Handler(http.FileServer(http.Dir("./public")))
 	r.PathPrefix("/js/").Handler(http.FileServer(http.Dir("./public")))

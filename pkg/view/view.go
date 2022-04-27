@@ -1,6 +1,7 @@
 package view
 
 import (
+	"embed"
 	"goblog/app/models/category"
 	"goblog/app/models/user"
 	"goblog/pkg/auth"
@@ -9,12 +10,14 @@ import (
 	"goblog/pkg/route"
 	"html/template"
 	"io"
-	"path/filepath"
+	"io/fs"
 	"strings"
 )
 
 //定义通用 传参给视图的数据
 type D map[string]interface{}
+
+var TplFS embed.FS
 
 func Render(w io.Writer, data D, tplFiles ...string) {
 
@@ -41,7 +44,7 @@ func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 	tmpl, err := template.New("").
 		Funcs(template.FuncMap{
 			"RouteName2URL": route.Name2URL,
-		}).ParseFiles(allFiles...)
+		}).ParseFS(TplFS, allFiles...)
 	logger.LogError(err)
 
 	//渲染模板 将所有文章数据传输进去
@@ -60,7 +63,7 @@ func getTemplateFiles(tplFiles ...string) []string {
 	}
 
 	//所有布局模板文件 slice
-	layoutFiles, err := filepath.Glob(viewDir + "layouts/*.gohtml")
+	layoutFiles, err := fs.Glob(TplFS, viewDir+"layouts/*.gohtml")
 	logger.LogError(err)
 
 	//合并所有文件

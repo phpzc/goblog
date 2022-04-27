@@ -1,11 +1,13 @@
 package bootstrap
 
 import (
+	"embed"
 	"goblog/app/models/article"
 	"goblog/app/models/category"
 	"goblog/app/models/user"
 	"goblog/pkg/config"
 	"goblog/pkg/model"
+	"goblog/pkg/view"
 
 	"time"
 
@@ -39,4 +41,8 @@ func migration(db *gorm.DB) {
 		&article.Article{},
 		&category.Category{},
 	)
+}
+
+func SetupTemplate(tplFS embed.FS) {
+	view.TplFS = tplFS
 }
